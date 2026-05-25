@@ -1,5 +1,6 @@
-// 一个简单的适配器注册表：按名字取，便于策略选择/降级/熔断
+// 适配器注册表：按名取实例，便于策略选择 / 降级 / 熔断
 import type { ImageGenAdapter, VideoGenAdapter, TtsAdapter, PublisherAdapter } from "./types";
+import type { LlmAdapter } from "./llm/types";
 
 export class Registry<T extends { name: string }> {
   private map = new Map<string, T>();
@@ -12,7 +13,8 @@ export class Registry<T extends { name: string }> {
   list(): string[] { return [...this.map.keys()]; }
 }
 
-export const imageRegistry = new Registry<ImageGenAdapter>();
-export const videoRegistry = new Registry<VideoGenAdapter>();
-export const ttsRegistry   = new Registry<TtsAdapter>();
+export const llmRegistry       = new Registry<LlmAdapter>();
+export const imageRegistry     = new Registry<ImageGenAdapter>();
+export const videoRegistry     = new Registry<VideoGenAdapter>();
+export const ttsRegistry       = new Registry<TtsAdapter>();
 export const publisherRegistry = new Registry<PublisherAdapter & { name: any }>();

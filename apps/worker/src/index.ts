@@ -1,7 +1,9 @@
-// Worker：演示用 demo 任务，跑一遍创作 + 发布流水线
-import { runCreative, runDistribute } from "@contentops/orchestrator";
-import "@contentops/adapters"; // 触发各适配器注册
-import type { Topic, Script } from "@contentops/core";
+// Worker：演示 M1 完整链路
+// 一条选题进来 → LLM 写脚本 → Fal 出图 → Kling 出视频 → ElevenLabs TTS → ffmpeg 合成 → 多平台发布
+// 任何一把 key 缺失都自动降级到 mock，整条管道不会断
+import "@contentops/adapters";        // 触发各适配器注册
+import { writeScript, runCreative, runDistribute } from "@contentops/orchestrator";
+import { describeStrategy, type Topic } from "@contentops/core";
 
 const topic: Topic = {
   id: "t_demo_1",
@@ -11,46 +13,43 @@ const topic: Topic = {
   audience: "想做内容副业的开发者",
   tone: "克制、信息密度高",
   lang: "zh",
-  createdAt: new Date().toISOString()
-};
-
-const script: Script = {
-  topicId: topic.id,
-  hook: "我让 AI 替我打工 24 小时，结果它产出了 30 条视频。",
-  totalSec: 30,
-  cta: "评论区扣 1，发你工作流。",
-  shots: [
-    { index: 1, durationSec: 5, voiceover: "这是我的内容工厂。", imagePrompt: "futuristic content factory, blue light, cinematic", cameraMotion: "slow zoom in", bgmMood: "tense" },
-    { index: 2, durationSec: 6, voiceover: "选题来自 X 和 YouTube 热榜。", imagePrompt: "neon dashboard with trending topics, dark UI", cameraMotion: "pan right" },
-    { index: 3, durationSec: 6, voiceover: "AI 写脚本，分镜直接落地。", imagePrompt: "storyboard panels glowing, sci-fi", cameraMotion: "static" },
-    { index: 4, durationSec: 7, voiceover: "Veo / Kling 出视频，ElevenLabs 配音。", imagePrompt: "racks of GPUs with video frames flying", cameraMotion: "dolly forward" },
-    { index: 5, durationSec: 6, voiceover: "8 个平台同时分发，评论自动回。", imagePrompt: "global map with 8 platform logos pulsing", cameraMotion: "zoom out" }
-  ]
+  createdAt: new Date().toISOString(),
 };
 
 async function main() {
-  const creative = await runCreative(topic, script, {
-    platforms: [
-      { platform: "x", account: "main" },
-      { platform: "youtube", account: "main" },
-      { platform: "tiktok", account: "cn" }
-    ]
-  });
-  console.log("[creative]", { images: creative.images.length, videos: creative.videos.length });
+  console.log("[strategy]", describeStrategy());
 
+  console.log("[1/4] writing script...");
+  const script = await writeScript(topic);
+  console.log("[script]", { hook: script.hook, shots: script.shots.length, totalSec: script.totalSec });
+
+  console.log("[2/4] generating images + videos + tts + compose...");
+  const creative = await runCreative(topic, script, {
+    platforms: [],
+    burnSubtitles: true,
+  });
+  console.log("[creative]", {
+    images: creative.images.length,
+    videos: creative.videos.length,
+    audios: creative.audios.length,
+    finalUrl: creative.finalAsset.url,
+  });
+
+  console.log("[3/4] distributing...");
   const items = await runDistribute(
     creative.finalAsset,
-    "我让 AI 跑了 24 小时，结果是这样的。",
-    ["AI", "自动化", "内容工厂"],
+    script.cta ?? script.hook,
+    topic.keywords,
     {
       platforms: [
-        { platform: "x", account: "main" },
+        { platform: "x",       account: "main" },
         { platform: "youtube", account: "main" },
-        { platform: "tiktok", account: "cn" }
-      ]
+        { platform: "tiktok",  account: "cn" },
+      ],
     }
   );
   console.log("[scheduled]", items.length);
+  console.log("[done]");
 }
 
-main().catch((e) => { console.error(e); process.exit(1); });
+main().catch((e) => { console.error("[fatal]", e); process.exit(1); });

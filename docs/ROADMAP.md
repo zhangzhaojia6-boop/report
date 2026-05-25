@@ -9,11 +9,12 @@
 - [x] web 控制台首页
 
 ## M1 真实出图出视频
-- [ ] 接 1 家图像（Fal/Flux）
-- [ ] 接 1 家视频（Kling 或 Veo）
-- [ ] 接 1 家 TTS（ElevenLabs）
-- [ ] FFmpeg 合成 + 字幕烧入
-- [ ] LLM 写脚本（DeepSeek/Claude）
+- [x] 接 1 家图像（Fal/Flux）
+- [x] 接 1 家视频（Kling）
+- [x] 接 1 家 TTS（ElevenLabs）
+- [x] FFmpeg 合成 + 字幕烧入
+- [x] LLM 写脚本（DeepSeek 主力 / Claude / OpenAI 备选 / mock 兜底）
+- [x] 策略选择器：有 key 走真实，缺 key 自动降级 mock
 
 ## M2 多平台分发
 - [ ] X API v2 发布 + 评论

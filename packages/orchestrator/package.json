@@ -6,6 +6,7 @@
   "scripts": { "typecheck": "tsc -p tsconfig.json --noEmit" },
   "dependencies": {
     "@contentops/core": "workspace:*",
-    "@contentops/adapters": "workspace:*"
+    "@contentops/adapters": "workspace:*",
+    "@contentops/composer": "workspace:*"
   }
 }

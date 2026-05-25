@@ -10,7 +10,8 @@
   "dependencies": {
     "@contentops/core": "workspace:*",
     "@contentops/adapters": "workspace:*",
-    "@contentops/orchestrator": "workspace:*"
+    "@contentops/orchestrator": "workspace:*",
+    "@contentops/composer": "workspace:*"
   },
   "devDependencies": { "tsx": "^4.19.0" }
 }
