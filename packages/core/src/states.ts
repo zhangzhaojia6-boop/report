@@ -1,0 +1,31 @@
+// 创作任务状态机：每条内容从选题到发布的完整生命周期
+export type CreationState =
+  | "TOPIC_READY"
+  | "SCRIPT_DRAFTED"
+  | "STORYBOARD_READY"
+  | "IMAGES_GENERATED"
+  | "VIDEO_GENERATED"
+  | "AUDIO_GENERATED"
+  | "COMPOSED"
+  | "QC_PASSED"
+  | "QC_FAILED"
+  | "READY_TO_SCHEDULE"
+  | "SCHEDULED"
+  | "PUBLISHED"
+  | "FAILED";
+
+export const NEXT_STATE: Record<CreationState, CreationState[]> = {
+  TOPIC_READY:        ["SCRIPT_DRAFTED"],
+  SCRIPT_DRAFTED:     ["STORYBOARD_READY"],
+  STORYBOARD_READY:   ["IMAGES_GENERATED"],
+  IMAGES_GENERATED:   ["VIDEO_GENERATED"],
+  VIDEO_GENERATED:    ["AUDIO_GENERATED"],
+  AUDIO_GENERATED:    ["COMPOSED"],
+  COMPOSED:           ["QC_PASSED", "QC_FAILED"],
+  QC_PASSED:          ["READY_TO_SCHEDULE"],
+  QC_FAILED:          ["STORYBOARD_READY", "FAILED"],
+  READY_TO_SCHEDULE:  ["SCHEDULED"],
+  SCHEDULED:          ["PUBLISHED", "FAILED"],
+  PUBLISHED:          [],
+  FAILED:             []
+};

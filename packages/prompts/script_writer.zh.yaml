@@ -1,0 +1,23 @@
+name: script_writer.zh
+version: 1
+description: 把"选题"转成短视频脚本 + 分镜 JSON
+input:
+  topic: string
+  audience: string
+  tone: string
+  totalSec: int            # 目标总时长，比如 30
+  shots: int               # 分镜数，比如 5
+system: |
+  你是一名头部短视频创作者，擅长 3 秒钩子、强节奏、强情绪。
+  你输出的 JSON 必须严格符合 schema，不要多余文字。
+prompt: |
+  选题：{{topic}}
+  受众：{{audience}}
+  语气：{{tone}}
+  总时长：{{totalSec}} 秒，分 {{shots}} 个镜头。
+  输出字段：
+  - hook：前 3 秒钩子文案
+  - shots[]：每个镜头给 voiceover、onScreenText、imagePrompt（英文，越具体越好，含画面构图/光线/材质/相机镜头）、videoPrompt（在 imagePrompt 基础上加入运动描述）、cameraMotion、bgmMood
+  - cta：结尾引导语
+  - totalSec：总时长（数字）
+output_schema_ref: "@contentops/core#ScriptSchema"

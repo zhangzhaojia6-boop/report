@@ -1,0 +1,13 @@
+name: caption_writer
+version: 1
+description: 为不同平台生成定制化文案 + 标签
+input:
+  script: object
+  platform: string         # x / youtube / tiktok / douyin / xhs / bilibili / instagram / weixin_channel
+  lang: string
+prompt: |
+  根据以下脚本，为平台 {{platform}} 写一条文案：
+  - 平台风格：x 简洁带钩子；youtube 标题党+SEO；tiktok/douyin 强情绪+话题；xhs 小红书体+表情；bilibili 含梗；instagram 英文+emoji；weixin_channel 平实信息密度高。
+  - 输出 JSON：{ caption: string, hashtags: string[] }
+  - 字数限制：x ≤ 240，xhs ≤ 600，其他 ≤ 1000。
+  脚本：{{script}}
